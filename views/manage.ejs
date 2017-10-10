@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html,body{
+			overflow: hidden;
+			background: url("./imgs/bg.jpg");
+		}
+		.container{
+			width: 980px;
+			margin: 0 auto;
+		}
+		.clear:after{
+			content:"";
+			display: block;
+			clear: both;
+		}
+		#header{
+			height: 100px;
+			background: #f2f2f2;
+		}
+		img{
+			display: block;
+		}
+		#header .container{
+			height: 100%;
+		}
+		#header .container .logo{
+			float: left;
+			height: 100%;
+		}
+		#header .container .logo img{
+			height: 100%;
+		}
+		nav{
+			height: 100%;
+			float: left;
+		}
+		nav ul{
+			height: 100%;
+			list-style: none;
+		}
+		nav ul li{
+			float: left;
+			line-height: 100px;
+			padding: 0 30px;
+		}
+		a{
+			text-decoration: none;
+			color: #000;
+			font-size: 20px;
+		}
+		.userInfo{
+			text-align: center;
+			float: right;
+			width: 300px;
+			height: 100%;
+		}
+		.head_pic{
+			float: left;
+			width: 100px;
+			height: 100px;
+		}
+		.head_pic img{
+			width: 80%;
+			height: 80%;
+			padding: 10%;
+		}
+		.username{
+			width:100px;
+			height: 100px;
+			line-height: 100px;
+			font-size: 20px;
+			float: left;
+		}
+		.username a{
+			color: yellowgreen;
+		}
+		.exit{
+			width:100px;
+			height: 100px;
+			line-height: 100px;
+			font-size: 20px;
+			float: left;
+		}
+
+		#body div ul li{
+			margin-bottom: 30px;
+		}
+
+		ul{
+			list-style: none;
+			text-align: center;
+		}
+		.list{
+			width: 980px;
+			overflow: hidden;
+		}
+		.list li{
+			float: left;
+			width: 25%;
+			height: 150px;
+
+		}
+		.list li img{
+			margin: 0 auto;
+			height: 100%;
+		}
+	  .posr {
+	  	position: relative;
+	  }
+	  .center{
+	  	position: absolute;
+	  	top: 50%;
+	  	left:50%;
+	  	transform:translateX(-50%) translateY(-50%);
+
+	  }
+	  #upload{
+	  	display: inline-block;
+	  	width: 20%;
+	  	margin-top: 30px;
+	  }
+	  .submit{
+	  	display: inline-block;
+	  	width: 20%;
+	  	margin-top: 30px;
+	  }
+
+	</style>
+</head>
+<body>
+	<header id="header">
+		<div class="container clear">
+			<div class="logo">
+				<img src="./imgs/logo.png" alt="">
+			</div>
+			<nav class="nav">
+				<ul class="clear">
+					<li><a href="/all_albums">全部相册</a></li>
+					<li><a href="/show_user_albums?username=<%=username%>">我的相册</a></li>
+					<li><a href="/manage">管理相册</a></li>
+				</ul>
+			</nav>
+			<div class="userInfo clear">
+				<div class="head_pic"><a href="/cut"><img src="<%=head_pic%>" alt=""></a></div>
+				<div class="username"><a href="/updatePassword"><%=username%></a></div>
+				<div class="exit"><a href="/exit">退出</a></div>
+			</div>
+		</div>
+	</header>
+	<section id="body">
+		<div class="container">
+		<ul>
+			<li class="create">
+				<h3>创建相册</h3>
+				<input type="text" id="album_name"> <input type="button" id="btn" value="创建">
+			</li>
+			<li class="show">
+				<h3>所有相册</h3> 
+				<select id="select">
+					<option value=""></option>
+					<%  for(var i =0;i<albums.length;i++){%>
+					<option value="<%=albums[i]%>"><%=albums[i]%></option>
+					<%}%>
+				</select> 
+				<ul class="list"> 
+
+				</ul>
+			</li>
+			<li class="uploads">
+        <h3>上传图片</h3>
+				<form action="/uploads" method="post" enctype="multipart/form-data">
+					<select name="album_name">
+						<option value=""></option>
+						<%  for(var i =0;i<albums.length;i++){%>
+						<option value="<%=albums[i]%>"><%=albums[i]%></option>
+						<%}%>
+					</select> 
+				</br>
+					<input type="file" name="upload" id="upload"></br>
+					<input type="submit" class="submit"> 
+				</form>
+			</li>
+		</ul>
+		</div>
+	</section>
+	<footer id="footer">
+		<div class="container"></div>
+	</footer>
+	<script type="text/javascript" src="./js/jquery-1.7.2.js"></script>
+	<script type="text/javascript">
+		 var album_name = $("#album_name");
+		 var btn = $("#btn");
+		 btn.click(function(){
+		 	 $.ajax({
+		 	 	url:"/create_album",
+		 	 	type:"get",
+		 	 	data:{
+		 	 		album_name:album_name.val()
+		 	 	},
+		 	 	dataType:"json",
+		 	 	success:function(data){
+		 	 		// 当成功的时候要添加到select里 
+		 	 		var option = "<option value="+album_name.val()+">"+album_name.val()+"</option>";
+		 	 		console.log(option)
+		 	 		$("select").each(function(){
+		 	 			console.log(this)
+		 	 			this.innerHTML += option
+		 	 		});
+
+		 	 	}
+		 	 })
+		 })
+		 $("#select").change(function(){
+		 	var me = this;
+		 	// 发送ajax请求后台数据并渲染
+		 	if($(this).val()===""){
+		 		return;
+		 	}
+		 	$.ajax({
+		 		url:"/getAlbumContent",
+		 		type:"get",
+		 		data:{
+		 			"album_name":$(this).val()
+		 		},
+		 		dataType:"json",
+		 		success:function(data){
+		 			$(".list").html(""); 
+		 			if(!data.error){
+		 				for(var i =0;i<data.data.length;i++){
+		 					var li = "<li class='posr'><img src="+<%=username%>+"/"+me.value+"/"+data.data[i].filename +" /><input data-username='<%=username%>' data-imgname="+data.data[i].filename +" class='center' type='checkbox' " + (data.data[i].share==="true"? "checked":"")+"  /></li>";
+		 					console.log(li)
+		 					$(".list").append(li);
+		 				}
+		 			}
+		 		}
+		 	});
+		 }) 
+		 $("ul.list").on("click","li.posr input",function(){
+				console.log(this.checked)
+		 		$.ajax({
+		 			url:"/change_quanxian",
+		 			type:"get",
+		 			data:{
+		 				state:this.checked,
+		 				album_name:$("#select").val(),
+		 				filename:$(this).data("imgname")
+		 			},
+		 			success:function(data){
+		 				
+		 			}
+		 		})
+		 })
+	</script>
+</body>
+</html>

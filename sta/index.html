@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+
+		html,body{
+			background: url(imgs/bg.jpg);
+		}
+
+		div{
+			width: 35%;
+			height: 120px;
+			border: 1px solid #000;
+			line-height: 120px;
+			background: #fff;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform:translateX(-50%) translateY(-50%);
+
+		}
+
+		div a{
+			float: left;
+			font-size: 24px;
+			color: #000;
+			text-decoration: none;
+			margin: 0 50px;
+		}
+		div a:nth-child(2){
+			float: right;
+		}
+
+
+	</style>
+</head>
+<body>
+	<div>
+		<a href="/login">登录</a>
+		<a href="/regist">注册</a>
+	</div>
+</body>
+</html>

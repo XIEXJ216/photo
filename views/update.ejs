@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html,body{
+			overflow: hidden;
+			background: url("./imgs/bg.jpg");
+		}
+		.container{
+			width: 980px;
+			margin: 0 auto;
+		}
+		.clear:after{
+			content:"";
+			display: block;
+			clear: both;
+		}
+		#header{
+			height: 100px;
+			background: #f2f2f2;
+		}
+		img{
+			display: block;
+		}
+		#header .container{
+			height: 100%;
+		}
+		#header .container .logo{
+			float: left;
+			height: 100%;
+		}
+		#header .container .logo img{
+			height: 100%;
+		}
+		nav{
+			height: 100%;
+			float: left;
+		}
+		nav ul{
+			height: 100%;
+			list-style: none;
+		}
+		nav ul li{
+			float: left;
+			line-height: 100px;
+			padding: 0 30px;
+		}
+		a{
+			text-decoration: none;
+			color: #000;
+			font-size: 20px;
+		}
+		.userInfo{
+			text-align: center;
+			float: right;
+			width: 300px;
+			height: 100%;
+		}
+		.head_pic{
+			float: left;
+			width: 100px;
+			height: 100px;
+		}
+		.head_pic img{
+			width: 80%;
+			height: 80%;
+			padding: 10%;
+		}
+		.username{
+			width:100px;
+			height: 100px;
+			line-height: 100px;
+			font-size: 20px;
+			float: left;
+		}
+		.username a{
+			color: yellowgreen;
+		}
+		.exit{
+			width:100px;
+			height: 100px;
+			line-height: 100px;
+			font-size: 20px;
+			float: left;
+		}
+
+		#body div form{
+			width: 500px;
+			margin: 0 auto;
+			border: 1px solid #000;
+			color: white;
+			margin-top: 40px;
+		}
+		#body div form p{
+			margin: 30px 0;
+		}
+		#body div form p label{
+			display: inline-block;
+			margin-left: 10%;
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+		#body div form p input{
+			display: inline-block;
+			width: 80%;
+			margin-left: 10%;
+
+		}
+
+		#submit{
+			display: inline-block;
+			width: 40%;
+			position: relative;
+			left: 30%;
+			margin-bottom: 50px;
+		}
+
+
+	</style>
+</head>
+<body>
+	<header id="header">
+		<div class="container clear">
+			<div class="logo">
+				<img src="./imgs/logo.png" alt="">
+			</div>
+			<nav class="nav">
+				<ul class="clear">
+					<li><a href="/all_albums">全部相册</a></li>
+					<li><a href="/show_user_albums?username=<%=username%>">我的相册</a></li>
+					<li><a href="/manage">管理相册</a></li>
+				</ul>
+			</nav>
+			<div class="userInfo clear">
+				<div class="head_pic"><a href="/cut"><img src="<%=head_pic%>" alt=""></a></div>
+				<div class="username"><a href="/updatePassword"><%=username%></a></div>
+				<div class="exit"><a href="/exit">退出</a></div>
+			</div>
+		</div>
+	</header>
+	<section id="body">
+		<div class="container">
+			<form action="/update" method="post">
+				<p>
+					<label for="oldPsd">旧密码：</label></br>
+					<input type="password" id="oldPsd">
+				</p>
+				<p>
+					<label for="newPsd">新密码:</label></br>
+					<input disabled  type="password" id="newPsd" name="newPsd">
+				</p>
+				<p>
+					<label for="newPsd1">确认密码:</label></br>
+					<input disabled type="password" id="newPsd1">
+				</p>
+				<input type="submit" id="submit">
+			</form>
+		</div>
+	</section>
+	<footer id="footer">
+		<div class="container"></div>
+	</footer>
+	<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+	<script type="text/javascript">
+	   var lock = false;
+		 $("#oldPsd").blur(function(){
+		 	// 判断是否为空
+		 	if(!$(this).val()){
+		 		return;
+		 	}
+		 	// 发送ajax到后台查询当前的input控件中的内容是否是旧密码
+		 	$.ajax({
+		 		url:"/check_psd",
+		 		type:"post",
+		 		data:{
+		 			oldPsd:$(this).val()
+		 		},
+		 		dataType:"json",
+		 		success:function(data){
+		 			if(!data.error){
+		 				// 数据正确 可以修改密码
+		 				$("#newPsd").removeAttr("disabled");
+		 				$("#newPsd1").removeAttr("disabled");
+		 			}
+		 		}
+		 	})
+		 })
+		 $("#newPsd1").blur(function(){
+		 	if($("#newPsd").val() === $(this).val()){
+		 		lock= true;
+		 	}
+		 });
+		 $("#submit").click(function(e){
+		 	  if(lock){
+
+		 	  }else{
+		 	  	return false;
+		 	  }
+		 })
+	</script>
+</body>
+</html>

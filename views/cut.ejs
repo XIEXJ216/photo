@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			height: 10000px;
+		}
+		#box1{
+			position: relative; 
+			background: url("<%=head_pic%>") no-repeat;
+			margin: 0 auto;
+		 
+		} 
+		.mengban{
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top:0;
+			left: 0;
+			background: rgb(0,0,0);
+			opacity: .3;
+			filter:alpha(opacity = 30); 
+		}
+		#area{
+			position: absolute;
+			width: 200px;
+			height: 200px;
+			top: 0;
+			left: 0;
+			background: url("<%=head_pic%>") no-repeat;
+		}
+		#rightBottom{
+			width: 5px;
+			height: 5px;
+			background: red;
+			position: absolute;
+			right: -2.5px;
+			bottom:-2.5px;
+		}
+		img{
+			display: block;
+		}
+		#box2{
+			position: relative;
+		}
+		button{
+			position: absolute;
+			width: 50px;
+			height: 20px;
+			top: 50px;
+			left: 50%;
+			transform:translateX(-50%);
+		} 
+	</style>
+</head>
+<body>
+	<div id="box1">
+		<img src="<%=head_pic%>" alt="">
+		<div class="mengban"></div>
+		<div id="area">
+			<div id="rightBottom"></div>
+		</div>
+	</div>
+	<div id="box2"><button id="btn">裁剪</button></div>
+	<script type="text/javascript">
+	  var img = new Image();
+	  img.src = "<%=head_pic%>";
+	  img.onload = function(){
+	  	box1.style.width = this.width+"px";
+	  }
+		// 定义一个函数 用来简写获取代码
+		var $ = function(id){
+			return document.getElementById(id);
+		}
+		var btn = $("btn");
+		btn.onclick = function(){
+			var xhr = null;
+			if(window.XMLHttpRequest){
+				xhr  = new XMLHttpRequest();
+			}else if(window.ActiveXObject){
+				xhr = new ActiveXObject("Microsoft.XMLhttp");
+			}
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState === 4 && xhr.status === 200){
+					var json = (new Function("return "+xhr.responseText+""))();
+					if(!json.error){
+						alert(json.data);
+						location.href = "";
+					}
+				}
+			}
+			xhr.open("get","/crop?x="+area.offsetLeft+"&y="+area.offsetTop+"&w="+area.clientWidth+"&h="+area.clientHeight,true);
+			xhr.send("");
+		}
+		// 获取元素
+		var box1 = $("box1");
+		var area = $("area");
+		var rightBottom = $("rightBottom");
+		// 右下角的点添加onmousedown事件
+		rightBottom.onmousedown = function(e){
+			// 兼容ie
+			var e  = e || window.event;
+			// 能力检测 阻止冒泡
+			if(e.stopPropagation){
+				e.stopPropagation();
+			}else{
+				e.cancelBubble = true;
+			}
+			// 记录当前的尺寸
+			var width = area.clientWidth;
+			var height = area.clientHeight;
+			// 记录当前的位置 然后添加onmousemove事件
+			var x = e.clientX;
+			var y = e.clientY;
+			// 添加onmousemove事件
+			document.onmousemove = function(e){
+				// 兼容
+				var e  = e || window.event;
+				// 阻止默认事件
+				if(e.preventDefault){
+					e.preventDefault();
+				}else {
+					e.returnValue = false;
+				}
+				// 定义变量用于判定
+				var nowX = e.clientX - x + width ;
+				var nowY =  e.clientY - y + height;
+				// 边界判定
+				if(nowX < 0){
+					nowX = 0;
+				}else if(nowX + area.offsetLeft > box1.clientWidth){
+					nowX = box1.clientWidth-area.offsetLeft ;
+				}
+				if(nowY < 0){
+					nowY = 0;
+				}else if(nowY + area.offsetTop > box1.clientHeight){
+					nowY = box1.clientHeight - area.offsetTop;
+				} 
+				// 此时 onmousemove触发的时候 会有一个实时的位置
+				area.style.width = nowX +"px";
+				area.style.height = nowY +"px";
+			}
+		}
+		// 鼠标抬起 移除事件
+		document.onmouseup = function(){
+			document.onmousemove = null;
+		}
+		// 白色部分的onmousedown事件
+		area.onmousedown = function(e){
+			// 兼容
+			var e  = e || window.event;
+			// 记录当前的鼠标位置
+			var x = e.clientX;
+			var y = e.clientY;
+			// 记录当前的定位值
+			var left = this.offsetLeft;
+			var top = this.offsetTop;
+			// 添加onmousemove事件
+			document.onmousemove = function(e){
+				// 兼容
+				var e  = e || window.event;
+				// 定义变量用于计算
+				var nowX = e.clientX - x + left;
+				var nowY = e.clientY - y + top;
+				// 边界判定
+				if(nowX<0){
+					nowX =0;
+				}else if(nowX > box1.clientWidth - area.clientWidth){
+					nowX = box1.clientWidth - area.clientWidth;
+				}
+				if(nowY<0){
+					nowY = 0;
+				}else if(nowY > box1.clientHeight - area.clientHeight){
+					nowY = box1.clientHeight - area.clientHeight;
+				}
+				// 计算定位值  
+				area.style.left = nowX +"px";
+				area.style.top = nowY +"px";
+				// 计算背景定位值
+				area.style.backgroundPosition = -(nowX )+"px " + -( nowY) +"px";
+			}
+		} 
+	</script>
+</body>
+</html>

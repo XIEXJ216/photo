@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html,body{
+			overflow: hidden;
+			background: url("./imgs/bg.jpg");
+		}
+		canvas{
+		}
+		#btn1{
+			position: fixed;
+			left: 40px;
+			bottom: 0;
+		}
+		#btn2{
+			position: fixed;
+			left: 20px;
+			bottom: 0;
+		}
+		.login{
+			width: 500px;
+			position: fixed;
+			left:50%;
+			top:50%;
+			transform:translateX(-50%) translateY(-50%);
+			border:1px solid #aaa;
+		}
+		h4{
+			padding-top: 50px;
+			text-align: center;
+			color: white;
+		}
+		p{
+			padding: 20px 0;
+			width: 400px;
+			margin: 0 auto;
+			text-align: center;
+		}
+		div{ 
+			width: 400px;
+			margin: 0 auto;
+			text-align: left;
+		}
+		 label{
+			display: inline-block;
+			width: 50%;
+			color:white;
+			text-align: center;
+		}
+		p>input{
+			width: 50%;
+			box-sizing:border-box;
+		}
+	</style>
+</head>
+<body>
+	<canvas></canvas> 
+	<div class="login">
+		<form action="<%=url%>" method="post" <%if(gongneng==="注册"){%>enctype="multipart/form-data"<%}%>>
+			<h4><%=gongneng%></h4>
+			<p><label for="username">用户名</label><input type="text" id="username" name="username"></p>
+			<div><label ></label><span class="tips"></span></div>
+			<p><label for="password">密码</label><input type="password" id="password" name="password"></p>
+			<% if(gongneng === "注册"){%>
+        <p><label for="password1">确认密码</label><input type="password" id="password1"></p>
+        <p><label for="head_pic">上传头像</label><input type="file" id="head_pic" name="head_pic"></p>
+			<%}%>
+
+			<p><input type="submit"></p>
+		</form>
+	</div>
+	<script type="text/javascript" src="./js/jquery-1.7.2.js"></script>
+	<script type="text/javascript"> 
+	  
+		// 当页面资源加载完毕的时候
+  	window.onload = function(){ 
+  		// 获取元素
+  		if("<%=gongneng%>" ==="注册"){
+  			var username = $("#username");
+	  		username.blur(function(){
+	  			if(!$(this).val()){
+	  				console.log("不能为空");
+	  				return;
+	  			}
+	  			$.ajax({
+	  				url:"/checkusername",
+	  				type:"get",
+	  				data:{"username":$(this).val()},
+	  				dataType:"json",
+	  				success:function(data){
+	  					if(!data.error){
+	  						$(".tips").html(data.data).css("background","green");
+	  					}else if(data.error===3){
+	  						$(".tips").html(data.data).css("background","orange");
+	  					} 
+	  				}
+	  			})
+  			})
+  		}else {
+  			var username = $("#username"); 
+	  		username.blur(function(){
+  	   		$(".tips").html("") 
+	  			if(!$(this).val()){
+	  				console.log("不能为空");
+	  				return;
+	  			}
+	  			$.ajax({
+	  				url:"/checkusername",
+	  				type:"get",
+	  				data:{"username":$(this).val()},
+	  				dataType:"json",
+	  				success:function(data){
+	  					if(!data.error){
+	  						$(".tips").html("对不起该账户不存在").css("background","orange");
+	  					}
+	  				}
+	  			})
+  			})
+  		}
+		}
+    
+	</script>
+</body>
+</html>
